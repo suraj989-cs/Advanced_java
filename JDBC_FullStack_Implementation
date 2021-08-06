@@ -1,0 +1,188 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.sql.*;
+import java.util.Scanner;
+
+public class JDBC_proj_1 {
+
+	public static void main(String[] args) {
+		
+		var b=(String) null;
+		int input;
+		try {
+				Class.forName("com.mysql.jdbc.Driver");  	
+				Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/project_1","root","");  
+		
+				//here sonoo is database name, root is username and password 
+				
+				do {
+				BufferedReader br=new BufferedReader(new InputStreamReader(System.in));  
+				Scanner sc=new Scanner(System.in);
+				System.out.println("Enter your choice:\n press 1 for insert:\n press 2 for update:"
+						+ "\n press 3 for delete specific column:\n press 4 for display table:");
+				int a = sc.nextInt();
+					int Id_no;
+					switch(a) {
+					
+					case 1:
+						
+						int temp =0;
+						do {
+							PreparedStatement mystmt4 = con.prepareStatement("SELECT `id` FROM `school` ");	
+							ResultSet rs=mystmt4.executeQuery();
+							System.out.println("Enter your id_no:");
+							Id_no = sc.nextInt();
+							sc.nextLine();
+							
+							
+							boolean empty1 = true; 
+							
+							while(rs.next())
+							{	if(Id_no==rs.getInt(1))
+							{
+								System.out.println("Id already exists");
+								empty1 = false;
+							}
+								 
+							 }
+							
+							if(empty1)
+							{
+								temp = 1;
+							}
+							
+							}while(temp!=1);
+							
+						System.out.println("Enter your name:");
+						String Name = sc.nextLine();
+						
+						System.out.println("Enter your class:");
+						int std = sc.nextInt();
+						
+						System.out.println("Enter your percentage:");
+						int per = sc.nextInt();
+						
+						System.out.println("Id: " + Id_no);
+						System.out.println("Name: " + Name); 
+						System.out.println("Class: " + std); 
+						System.out.println("Percentage: " + per);
+						
+					
+						String sql = "insert into school values(? ,? ,? ,? )";
+						PreparedStatement myStmt = con.prepareStatement(sql);
+			
+						// set parameters values
+						myStmt.setInt(1, Id_no);
+						myStmt.setString(2, Name);
+						myStmt.setInt(3, std);
+						myStmt.setInt(4, per);
+					
+						// execute query
+						myStmt.executeUpdate();
+						System.out.println("data inserted successfully......");
+						break;
+					
+					case 2:
+						
+						System.out.print("what you want to update name, class and percentage :");
+						String U_input =br.readLine();
+						U_input.toLowerCase();
+						
+							
+						if(U_input.startsWith("c"))
+						{ 
+							System.out.println("where id equals:");
+							int U_row1=sc.nextInt();
+						  System.out.println("Enter the new class:");
+						  int U_class=sc.nextInt();
+						  PreparedStatement myStmt1 = con.prepareStatement("UPDATE `school` SET `class`=? WHERE id=?");
+						  myStmt1.setInt(1, U_class);
+						  myStmt1.setInt(2, U_row1);
+						  myStmt1.executeUpdate();
+						  System.out.print("class updated.....\n");
+						  break;
+						}
+						
+						if(U_input.startsWith("n"))
+						{
+							System.out.println("where id equals:");
+							int U_row3=sc.nextInt();
+							System.out.println("Enter the name:");
+							  String U_name=br.readLine();
+							  PreparedStatement myStmt3 = con.prepareStatement("UPDATE `school` SET `Name`=? WHERE id=?");
+							  myStmt3.setString(1, U_name);
+							  myStmt3.setInt(2, U_row3);
+							  myStmt3.executeUpdate();
+							  System.out.print("Name updated.....\n");
+							  break;
+						}
+						if(U_input.startsWith("p"))
+						{
+							System.out.println("where id equals:");
+							int U_row4=sc.nextInt();
+							System.out.println("Enter the new percentage:");
+							  int U_per=sc.nextInt();
+							  PreparedStatement myStmt4 = con.prepareStatement("UPDATE `school` SET `percentage`=? WHERE id=?");
+							  myStmt4.setInt(1, U_per);
+							  myStmt4.setInt(2, U_row4);
+							  myStmt4.executeUpdate();
+							  System.out.print("percentage updated.....\n");
+							  break;
+						}	
+						
+					break;
+					
+					case 3:
+						System.out.println("Enter Row no. you want to delete:");
+						  int U_coln=sc.nextInt();
+						  PreparedStatement myStmt1 = con.prepareStatement("DELETE FROM `school` WHERE id=?");
+						  myStmt1.setInt(1, U_coln);
+						  myStmt1.executeUpdate();
+						  System.out.print(U_coln+" Row deleted.....\n");
+						
+					break;
+				
+					case 4:
+					
+					PreparedStatement mystmt3 = con.prepareStatement("SELECT count(*) From school");
+					mystmt3.executeQuery();
+					System.out.println();
+					Statement myStmt2 = con.createStatement();		
+					ResultSet rs1=myStmt2.executeQuery("select * from school");
+				
+					boolean empty = true;
+					
+					while(rs1.next()) 
+					{
+					System.out.println(rs1.getInt(1)+"  "+rs1.getString(2)+"  "+rs1.getInt(3)+"  "+rs1.getInt(4));
+					empty = false;
+					}
+					
+					if( empty ) {
+			            System.out.println("Table is empty....");
+			        }
+					break;
+					
+					default:
+						System.out.println("invalid choice..\n");
+					break;
+					
+					}
+				
+					System.out.println("Do you want to continue: y/n");  
+					String s=br.readLine();  
+					if(s.startsWith("n"))  
+					break;  
+			    
+					
+				}while (true);
+				
+				System.out.println("Program terminated...");
+			
+				con.close(); 
+				
+				}catch(Exception e){ System.out.println(e);}  
+	}
+
+}
+	
